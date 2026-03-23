@@ -426,33 +426,37 @@ document.addEventListener('DOMContentLoaded', () => {
             // Only open if it wasn't a drag
             if (dragDistance > 10) return;
 
-            const projectData = JSON.parse(slide.getAttribute('data-project'));
-            const isRich = slide.hasAttribute('data-project-rich');
+            try {
+                const projectData = JSON.parse(slide.getAttribute('data-project'));
+                const isRich = slide.hasAttribute('data-project-rich');
 
-            modalTitle.textContent = projectData.title;
-            modalImg.src = projectData.img;
+                modalTitle.textContent = projectData.title;
+                modalImg.src = projectData.img;
 
-            // Use rich HTML content or plain text
-            if (isRich && projectData.richDesc) {
-                modalDesc.innerHTML = projectData.richDesc;
-            } else {
-                modalDesc.textContent = projectData.desc || '';
-            }
-
-            if (projectData.link && projectData.link !== '#') {
-                modalLink.href = projectData.link;
-                modalLink.style.display = 'inline-flex';
-                // Custom button text for products
-                const linkSpan = modalLink.querySelector('span');
-                if (linkSpan) {
-                    linkSpan.textContent = projectData.linkText || 'Ver Projeto Ao Vivo';
+                if (isRich && projectData.richDesc) {
+                    modalDesc.innerHTML = projectData.richDesc;
+                } else {
+                    modalDesc.textContent = projectData.desc || '';
                 }
-            } else {
-                modalLink.style.display = 'none';
-            }
 
-            modal.classList.add('active');
-            document.body.style.overflow = 'hidden';
+                if (projectData.link && projectData.link !== '#') {
+                    modalLink.setAttribute('href', projectData.link);
+                    modalLink.href = projectData.link; // Double insurance
+                    modalLink.style.display = 'inline-flex';
+                    const linkSpan = modalLink.querySelector('span');
+                    if (linkSpan) {
+                        linkSpan.textContent = projectData.linkText || 'Ver Projeto Ao Vivo';
+                    }
+                } else {
+                    modalLink.style.display = 'none';
+                    modalLink.href = '#';
+                }
+
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            } catch (err) {
+                console.error("Erro ao carregar dados do projeto:", err);
+            }
         });
     });
 
