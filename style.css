@@ -451,7 +451,7 @@ ul {
     position: absolute;
     right: 0;
     top: 0;
-    width: 52%;
+    width: 50%;
     height: 100%;
     z-index: 1;
     opacity: 0;
@@ -472,7 +472,9 @@ ul {
     }
 
     .hero__content {
+        width: 100%;
         max-width: 90vw;
+        margin: 0 auto;
         padding-left: 20px;
         padding-right: 20px;
     }
@@ -623,9 +625,11 @@ ul {
 .hero__content {
     position: relative;
     z-index: 2;
-    max-width: 520px;
-    padding-left: max(40px, 7vw);
-    padding-right: 40px;
+    width: 48%;
+    max-width: 540px;
+    margin: 0;                       /* override .container margin: 0 auto */
+    padding-left: max(40px, 6vw);
+    padding-right: 32px;
 }
 
 .hero__badge {

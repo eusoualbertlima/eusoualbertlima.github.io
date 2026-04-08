@@ -553,12 +553,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Node definitions — positions as % of canvas
         const NODES = [
-            { label: 'Schedule Trigger', sub: 'trigger',  color: '#f97316', px: 0.04, py: 0.44 },
-            { label: 'Google Sheets',    sub: 'sheets',   color: '#22c55e', px: 0.32, py: 0.24 },
-            { label: 'Filtrar Dados',    sub: 'code',     color: '#f97316', px: 0.32, py: 0.56 },
-            { label: 'WhatsApp API',     sub: 'http',     color: '#22c55e', px: 0.64, py: 0.14 },
-            { label: 'Baserow CRM',      sub: 'database', color: '#6366f1', px: 0.64, py: 0.46 },
-            { label: 'Marcar Enviado',   sub: 'baserow',  color: '#6366f1', px: 0.64, py: 0.76 },
+            { label: 'Schedule Trigger', sub: 'trigger',  color: '#f97316', px: 0.02, py: 0.42 },
+            { label: 'Google Sheets',    sub: 'sheets',   color: '#22c55e', px: 0.31, py: 0.22 },
+            { label: 'Filtrar Dados',    sub: 'code',     color: '#f97316', px: 0.31, py: 0.55 },
+            { label: 'WhatsApp API',     sub: 'http',     color: '#22c55e', px: 0.63, py: 0.12 },
+            { label: 'Baserow CRM',      sub: 'database', color: '#6366f1', px: 0.63, py: 0.44 },
+            { label: 'Marcar Enviado',   sub: 'baserow',  color: '#6366f1', px: 0.63, py: 0.76 },
         ];
 
         const CONNS = [
