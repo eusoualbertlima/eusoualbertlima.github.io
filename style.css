@@ -447,6 +447,26 @@ ul {
     overflow: hidden;
 }
 
+.hero__canvas {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 52%;
+    height: 100%;
+    z-index: 1;
+    opacity: 0;
+    transition: opacity 1s ease 2s;
+    pointer-events: none;
+}
+
+.hero__canvas.canvas-ready {
+    opacity: 1;
+}
+
+@media (max-width: 900px) {
+    .hero__canvas { display: none; }
+}
+
 .hero__bg {
     position: absolute;
     inset: 0;

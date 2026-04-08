@@ -534,6 +534,248 @@ document.addEventListener('DOMContentLoaded', () => {
         waFloat.style.transform = 'scale(1)';
     }, 3000);
 
+    // ——— HERO CANVAS: n8n Workflow Animation ———
+    const heroCanvas = document.getElementById('heroCanvas');
+    if (heroCanvas && window.innerWidth > 900) {
+        const ctx = heroCanvas.getContext('2d');
+
+        const resize = () => {
+            const dpr = window.devicePixelRatio || 1;
+            heroCanvas.width  = heroCanvas.offsetWidth  * dpr;
+            heroCanvas.height = heroCanvas.offsetHeight * dpr;
+            ctx.scale(dpr, dpr);
+        };
+        resize();
+        window.addEventListener('resize', () => { resize(); });
+
+        const W = () => heroCanvas.offsetWidth;
+        const H = () => heroCanvas.offsetHeight;
+
+        // Node definitions — positions as % of canvas
+        const NODES = [
+            { label: 'Schedule Trigger', sub: 'trigger',  color: '#f97316', px: 0.06, py: 0.42 },
+            { label: 'Google Sheets',    sub: 'sheets',   color: '#22c55e', px: 0.30, py: 0.28 },
+            { label: 'Filtrar Dados',    sub: 'code',     color: '#f97316', px: 0.30, py: 0.58 },
+            { label: 'WhatsApp API',     sub: 'http',     color: '#22c55e', px: 0.62, py: 0.20 },
+            { label: 'Baserow CRM',      sub: 'database', color: '#6366f1', px: 0.62, py: 0.48 },
+            { label: 'Marcar Enviado',   sub: 'baserow',  color: '#6366f1', px: 0.62, py: 0.76 },
+        ];
+
+        const CONNS = [
+            { from: 0, to: 1 },
+            { from: 0, to: 2 },
+            { from: 1, to: 3 },
+            { from: 2, to: 4 },
+            { from: 2, to: 5 },
+        ];
+
+        const NW = 148, NH = 48;
+
+        const pos = (n) => ({ x: n.px * W(), y: n.py * H() });
+
+        const nodeAlpha  = NODES.map(() => 0);
+        const connAlpha  = CONNS.map(() => 0);
+        const connDraw   = CONNS.map(() => 0); // 0→1 draw progress
+
+        let revNode = 0, revConn = 0;
+        let phase = 'nodes';
+        const pulses = [];
+        let lastT = 0;
+
+        // ---- draw helpers ----
+        const roundRect = (x, y, w, h, r) => {
+            ctx.beginPath();
+            ctx.moveTo(x + r, y);
+            ctx.lineTo(x + w - r, y);
+            ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+            ctx.lineTo(x + w, y + h - r);
+            ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+            ctx.lineTo(x + r, y + h);
+            ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+            ctx.lineTo(x, y + r);
+            ctx.quadraticCurveTo(x, y, x + r, y);
+            ctx.closePath();
+        };
+
+        const bezierPt = (t, x1, y1, cx1, cy1, cx2, cy2, x2, y2) => ({
+            x: Math.pow(1-t,3)*x1 + 3*Math.pow(1-t,2)*t*cx1 + 3*(1-t)*t*t*cx2 + t*t*t*x2,
+            y: Math.pow(1-t,3)*y1 + 3*Math.pow(1-t,2)*t*cy1 + 3*(1-t)*t*t*cy2 + t*t*t*y2,
+        });
+
+        const connPts = (ci) => {
+            const f = pos(NODES[CONNS[ci].from]);
+            const t = pos(NODES[CONNS[ci].to]);
+            const x1 = f.x + NW/2, y1 = f.y;
+            const x2 = t.x - NW/2, y2 = t.y;
+            const dx = Math.abs(x2 - x1) * 0.45;
+            return { x1, y1, cx1: x1 + dx, cy1: y1, cx2: x2 - dx, cy2: y2, x2, y2 };
+        };
+
+        const drawNode = (n, alpha) => {
+            if (alpha <= 0) return;
+            const { x, y } = pos(n);
+            const nx = x - NW/2, ny = y - NH/2;
+            const sc = 0.88 + alpha * 0.12;
+
+            ctx.save();
+            ctx.globalAlpha = alpha;
+            ctx.translate(x, y);
+            ctx.scale(sc, sc);
+            ctx.translate(-x, -y);
+
+            // glow
+            ctx.shadowColor = n.color;
+            ctx.shadowBlur = 16 * alpha;
+
+            // card bg
+            roundRect(nx, ny, NW, NH, 8);
+            ctx.fillStyle = '#131320';
+            ctx.fill();
+            ctx.shadowBlur = 0;
+            ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+
+            // accent bar left
+            ctx.beginPath();
+            ctx.moveTo(nx, ny + 8);
+            ctx.lineTo(nx, ny + NH - 8);
+            ctx.lineTo(nx + 3, ny + NH - 8);
+            ctx.lineTo(nx + 3, ny + 8);
+            ctx.closePath();
+            ctx.fillStyle = n.color;
+            ctx.fill();
+
+            // icon dot
+            ctx.beginPath();
+            ctx.arc(nx + 20, y, 8, 0, Math.PI * 2);
+            ctx.fillStyle = n.color + '22';
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(nx + 20, y, 3.5, 0, Math.PI * 2);
+            ctx.fillStyle = n.color;
+            ctx.fill();
+
+            // label
+            ctx.fillStyle = '#ffffff';
+            ctx.font = '600 11px Inter, sans-serif';
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(n.label, nx + 36, y - 5);
+
+            // sub
+            ctx.fillStyle = 'rgba(255,255,255,0.3)';
+            ctx.font = '400 9.5px Inter, sans-serif';
+            ctx.fillText(n.sub, nx + 36, y + 7);
+
+            // port right
+            ctx.beginPath();
+            ctx.arc(nx + NW, y, 4.5, 0, Math.PI * 2);
+            ctx.fillStyle = '#1e1e30';
+            ctx.strokeStyle = 'rgba(255,255,255,0.18)';
+            ctx.lineWidth = 1.5;
+            ctx.fill();
+            ctx.stroke();
+
+            // port left
+            ctx.beginPath();
+            ctx.arc(nx, y, 4.5, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.restore();
+        };
+
+        const drawConn = (ci, drawProg, alpha) => {
+            if (alpha <= 0 || drawProg <= 0) return;
+            const { x1, y1, cx1, cy1, cx2, cy2, x2, y2 } = connPts(ci);
+            ctx.save();
+            ctx.globalAlpha = alpha * 0.65;
+            ctx.strokeStyle = '#6c5ce7';
+            ctx.lineWidth = 1.8;
+            ctx.beginPath();
+            const steps = 50;
+            for (let i = 0; i <= steps; i++) {
+                const t = (i / steps) * drawProg;
+                const p = bezierPt(t, x1, y1, cx1, cy1, cx2, cy2, x2, y2);
+                i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y);
+            }
+            ctx.stroke();
+            ctx.restore();
+        };
+
+        const drawPulse = (ci, t) => {
+            const { x1, y1, cx1, cy1, cx2, cy2, x2, y2 } = connPts(ci);
+            const p = bezierPt(t, x1, y1, cx1, cy1, cx2, cy2, x2, y2);
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
+            ctx.fillStyle = '#a78bfa';
+            ctx.shadowColor = '#a78bfa';
+            ctx.shadowBlur = 14;
+            ctx.fill();
+            ctx.restore();
+        };
+
+        const tick = (now) => {
+            const dt = Math.min((now - lastT) / 1000, 0.05);
+            lastT = now;
+
+            ctx.clearRect(0, 0, W(), H());
+
+            // Phase: reveal nodes one by one
+            if (phase === 'nodes') {
+                if (revNode < NODES.length) {
+                    nodeAlpha[revNode] = Math.min(nodeAlpha[revNode] + dt * 3.5, 1);
+                    if (nodeAlpha[revNode] >= 1) revNode++;
+                } else {
+                    phase = 'conns';
+                }
+            }
+
+            // Phase: draw connections
+            if (phase === 'conns') {
+                if (revConn < CONNS.length) {
+                    connAlpha[revConn] = Math.min(connAlpha[revConn] + dt * 3, 1);
+                    connDraw[revConn]  = Math.min(connDraw[revConn]  + dt * 1.8, 1);
+                    if (connDraw[revConn] >= 1) revConn++;
+                } else {
+                    phase = 'pulse';
+                }
+            }
+
+            // Phase: running pulses
+            if (phase === 'pulse') {
+                // spawn new pulse wave every 2.2s
+                if (!pulses._timer) pulses._timer = 0;
+                pulses._timer += dt;
+                if (pulses._timer > 2.2) {
+                    pulses._timer = 0;
+                    CONNS.forEach((_, i) => {
+                        setTimeout(() => pulses.push({ ci: i, t: 0 }), i * 160);
+                    });
+                }
+                for (let i = pulses.length - 1; i >= 0; i--) {
+                    pulses[i].t += dt * 0.75;
+                    if (pulses[i].t > 1.1) pulses.splice(i, 1);
+                }
+            }
+
+            // Draw
+            CONNS.forEach((_, i) => drawConn(i, connDraw[i], connAlpha[i]));
+            pulses.forEach(p => { if (p.t <= 1) drawPulse(p.ci, p.t); });
+            NODES.forEach((n, i) => drawNode(n, nodeAlpha[i]));
+
+            requestAnimationFrame(tick);
+        };
+
+        setTimeout(() => {
+            heroCanvas.classList.add('canvas-ready');
+            lastT = performance.now();
+            requestAnimationFrame(tick);
+        }, 2000);
+    }
+
     // ——— SCROLL BUILD SECTION (Apple-style pinned scroll) ———
     const sbWrapper = document.querySelector('.scroll-build__wrapper');
     const sbSticky  = document.querySelector('.scroll-build__sticky');
