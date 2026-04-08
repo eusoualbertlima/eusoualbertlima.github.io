@@ -534,6 +534,22 @@ document.addEventListener('DOMContentLoaded', () => {
         waFloat.style.transform = 'scale(1)';
     }, 3000);
 
+    // ——— BUILD ANIMATION: Service card list items reveal on scroll ———
+    const serviceCards = document.querySelectorAll('.servico-card');
+    const buildObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                // Small delay so the card fade-up finishes first
+                setTimeout(() => {
+                    entry.target.classList.add('built');
+                }, 200);
+                buildObserver.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.25 });
+
+    serviceCards.forEach(card => buildObserver.observe(card));
+
     // ——— PORTFOLIO SCROLL HINT: Hide after first interaction ———
     const scrollHint = document.querySelector('.portfolio__scroll-hint');
     if (scrollHint && track) {
