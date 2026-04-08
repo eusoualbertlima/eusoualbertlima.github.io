@@ -1174,6 +1174,26 @@ ul {
     font-weight: 700;
 }
 
+.servico-card__price {
+    margin-top: 20px;
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    border-top: 1px solid rgba(255,255,255,0.08);
+    padding-top: 16px;
+}
+
+.servico-card__price span {
+    font-size: 0.85rem;
+    font-weight: 400;
+    color: var(--text-secondary);
+    margin-left: 4px;
+}
+
+.servico-card--featured .servico-card__price {
+    color: var(--accent);
+}
+
 /* ============================================= */
 /* DEPOIMENTOS                                   */
 /* ============================================= */
