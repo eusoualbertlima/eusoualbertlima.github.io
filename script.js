@@ -553,7 +553,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Node definitions — positions as % of canvas
         const NODES = [
-            { label: 'Schedule Trigger', sub: 'trigger',  color: '#f97316', px: 0.02, py: 0.42 },
+            { label: 'Schedule Trigger', sub: 'trigger',  color: '#f97316', px: 0.08, py: 0.42 },
             { label: 'Google Sheets',    sub: 'sheets',   color: '#22c55e', px: 0.31, py: 0.22 },
             { label: 'Filtrar Dados',    sub: 'code',     color: '#f97316', px: 0.31, py: 0.55 },
             { label: 'WhatsApp API',     sub: 'http',     color: '#22c55e', px: 0.63, py: 0.12 },
