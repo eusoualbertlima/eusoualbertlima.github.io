@@ -455,7 +455,7 @@ ul {
     height: 100%;
     z-index: 1;
     opacity: 0;
-    transition: opacity 1s ease 2s;
+    transition: opacity 0.8s ease 0.4s;
     pointer-events: none;
 }
 
@@ -2496,7 +2496,7 @@ ul {
 }
 
 .statement-section__wrap {
-    height: 280vh;
+    height: 200vh;
     position: relative;
 }
 
@@ -2545,7 +2545,7 @@ ul {
 }
 
 @media (max-width: 768px) {
-    .statement-section__wrap { height: 220vh; }
+    .statement-section__wrap { height: 160vh; }
     .statement-section__sticky { padding: 0 24px; }
     .ss-line { font-size: clamp(2.4rem, 9vw, 4rem); letter-spacing: -1.5px; }
     .ss-line--small { font-size: 1rem; }

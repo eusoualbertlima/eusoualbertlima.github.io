@@ -773,7 +773,7 @@ document.addEventListener('DOMContentLoaded', () => {
             heroCanvas.classList.add('canvas-ready');
             lastT = performance.now();
             requestAnimationFrame(tick);
-        }, 2000);
+        }, 500);
     }
 
     // ——— SCROLL BUILD SECTION (Apple-style pinned scroll) ———
@@ -855,10 +855,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ——— HERO SCROLL PARALLAX EXIT ———
-    const heroSection  = document.querySelector('.hero');
+    const heroSection   = document.querySelector('.hero');
     const heroContentEl = document.querySelector('.hero__content');
-    const heroCanvasEl  = document.getElementById('heroCanvas');
-    let canvasLoaded = false;
 
     const applyHeroParallax = () => {
         const sy    = window.scrollY;
@@ -869,14 +867,9 @@ document.addEventListener('DOMContentLoaded', () => {
             heroContentEl.style.transform = prog > 0 ? `translateY(${-prog * 75}px)` : '';
             heroContentEl.style.opacity   = prog > 0 ? String(Math.max(0, 1 - prog * 2)) : '';
         }
-        if (heroCanvasEl && canvasLoaded) {
-            heroCanvasEl.style.transform = `translateY(${-prog * 28}px)`;
-            heroCanvasEl.style.opacity   = String(Math.max(0, 1 - prog * 1.4));
-        }
+        // Canvas exits naturally with the hero — no opacity manipulation (avoids timing bugs)
     };
 
-    // Mark canvas as loaded after its entrance animation finishes (2s delay + 1s transition)
-    setTimeout(() => { canvasLoaded = true; applyHeroParallax(); }, 3200);
     window.addEventListener('scroll', applyHeroParallax, { passive: true });
 
     // ——— STATEMENT MOMENT SCROLL ———
@@ -889,7 +882,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const scrollableH     = ssWrap.offsetHeight - window.innerHeight;
             const scrolled        = -rect.top;
             const prog            = Math.max(0, Math.min(scrolled / scrollableH, 1));
-            const breakpoints     = [0.04, 0.26, 0.46, 0.62, 0.78];
+            const breakpoints     = [0.02, 0.20, 0.38, 0.56, 0.72];
             ssLines.forEach((line, i) => {
                 line.classList.toggle('ss-visible', prog >= (breakpoints[i] ?? 0));
             });
