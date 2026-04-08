@@ -854,6 +854,61 @@ document.addEventListener('DOMContentLoaded', () => {
         }, { once: true });
     }
 
+    // ——— HERO SCROLL PARALLAX EXIT ———
+    const heroSection  = document.querySelector('.hero');
+    const heroContentEl = document.querySelector('.hero__content');
+    const heroCanvasEl  = document.getElementById('heroCanvas');
+    let canvasLoaded = false;
+
+    const applyHeroParallax = () => {
+        const sy    = window.scrollY;
+        const heroH = heroSection ? heroSection.offsetHeight : 800;
+        const prog  = Math.min(sy / (heroH * 0.65), 1);
+
+        if (heroContentEl) {
+            heroContentEl.style.transform = prog > 0 ? `translateY(${-prog * 75}px)` : '';
+            heroContentEl.style.opacity   = prog > 0 ? String(Math.max(0, 1 - prog * 2)) : '';
+        }
+        if (heroCanvasEl && canvasLoaded) {
+            heroCanvasEl.style.transform = `translateY(${-prog * 28}px)`;
+            heroCanvasEl.style.opacity   = String(Math.max(0, 1 - prog * 1.4));
+        }
+    };
+
+    // Mark canvas as loaded after its entrance animation finishes (2s delay + 1s transition)
+    setTimeout(() => { canvasLoaded = true; applyHeroParallax(); }, 3200);
+    window.addEventListener('scroll', applyHeroParallax, { passive: true });
+
+    // ——— STATEMENT MOMENT SCROLL ———
+    const ssWrap  = document.querySelector('.statement-section__wrap');
+    const ssLines = document.querySelectorAll('.ss-line');
+
+    if (ssWrap && ssLines.length) {
+        const updateStatement = () => {
+            const rect            = ssWrap.getBoundingClientRect();
+            const scrollableH     = ssWrap.offsetHeight - window.innerHeight;
+            const scrolled        = -rect.top;
+            const prog            = Math.max(0, Math.min(scrolled / scrollableH, 1));
+            const breakpoints     = [0.04, 0.26, 0.46, 0.62, 0.78];
+            ssLines.forEach((line, i) => {
+                line.classList.toggle('ss-visible', prog >= (breakpoints[i] ?? 0));
+            });
+        };
+        window.addEventListener('scroll', updateStatement, { passive: true });
+        updateStatement();
+    }
+
+    // ——— SKILLS MARQUEE ———
+    const skillsStrip = document.querySelector('.skills-strip');
+    if (skillsStrip) {
+        const originalHTML = skillsStrip.innerHTML;
+        const marqTrack    = document.createElement('div');
+        marqTrack.className = 'skills-marquee__track';
+        marqTrack.innerHTML  = originalHTML + originalHTML; // duplicate for seamless loop
+        skillsStrip.innerHTML = '';
+        skillsStrip.appendChild(marqTrack);
+    }
+
 });
 
 /* Shake animation (injected via JS) */
