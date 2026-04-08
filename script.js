@@ -534,6 +534,57 @@ document.addEventListener('DOMContentLoaded', () => {
         waFloat.style.transform = 'scale(1)';
     }, 3000);
 
+    // ——— SCROLL BUILD SECTION (Apple-style pinned scroll) ———
+    const sbWrapper = document.querySelector('.scroll-build__wrapper');
+    const sbSticky  = document.querySelector('.scroll-build__sticky');
+
+    if (sbWrapper && window.innerWidth > 768) {
+        const sbLabel    = document.getElementById('sbLabel');
+        const sbWords    = document.querySelectorAll('.sb-word');
+        const sbStep1    = document.getElementById('sbStep1');
+        const sbStep2    = document.getElementById('sbStep2');
+        const sbStep3    = document.getElementById('sbStep3');
+        const sbCta      = document.getElementById('sbCta');
+        const sbFill     = document.getElementById('sbProgressFill');
+
+        let sbProgress = 0;
+        let sbRaf = null;
+
+        const sbUpdate = () => {
+            const rect = sbWrapper.getBoundingClientRect();
+            const total = sbWrapper.offsetHeight - window.innerHeight;
+            const scrolled = -rect.top;
+            const p = Math.max(0, Math.min(1, scrolled / total));
+            sbProgress = p;
+
+            // Fill bar
+            if (sbFill) sbFill.style.width = (p * 100) + '%';
+
+            // Label — 0%
+            if (sbLabel) sbLabel.classList.toggle('sb-visible', p >= 0.02);
+
+            // Words stagger — 5% to 25%
+            sbWords.forEach((w, i) => {
+                w.classList.toggle('sb-visible', p >= 0.06 + i * 0.05);
+            });
+
+            // Steps — 30%, 50%, 68%
+            if (sbStep1) sbStep1.classList.toggle('sb-visible', p >= 0.30);
+            if (sbStep2) sbStep2.classList.toggle('sb-visible', p >= 0.50);
+            if (sbStep3) sbStep3.classList.toggle('sb-visible', p >= 0.68);
+
+            // CTA — 85%
+            if (sbCta) sbCta.classList.toggle('sb-visible', p >= 0.85);
+        };
+
+        window.addEventListener('scroll', () => {
+            if (sbRaf) cancelAnimationFrame(sbRaf);
+            sbRaf = requestAnimationFrame(sbUpdate);
+        }, { passive: true });
+
+        sbUpdate(); // run once on load
+    }
+
     // ——— BUILD ANIMATION: Service card list items reveal on scroll ———
     const serviceCards = document.querySelectorAll('.servico-card');
     const buildObserver = new IntersectionObserver((entries) => {

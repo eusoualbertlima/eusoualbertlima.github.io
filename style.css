@@ -2233,3 +2233,170 @@ ul {
         gap: 24px;
     }
 }
+/* ============================================= */
+/* SKILLS STRIP                                  */
+/* ============================================= */
+.skills-strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 48px;
+}
+
+.skill-tag {
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.09);
+    border-radius: 100px;
+    padding: 6px 16px;
+    transition: all 0.2s ease;
+}
+
+.skill-tag:hover {
+    color: var(--text-primary);
+    border-color: rgba(255,255,255,0.2);
+}
+
+.skill-tag--highlight {
+    color: var(--primary-light);
+    border-color: rgba(108,92,231,0.35);
+    background: rgba(108,92,231,0.08);
+}
+
+/* ============================================= */
+/* SCROLL BUILD SECTION                          */
+/* ============================================= */
+.scroll-build__wrapper {
+    height: 320vh;
+    position: relative;
+}
+
+.scroll-build__sticky {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background: var(--bg-primary);
+}
+
+.scroll-build__sticky::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 60%, rgba(108,92,231,0.08) 0%, transparent 65%);
+    pointer-events: none;
+}
+
+.scroll-build__track {
+    position: relative;
+    width: 100%;
+    max-width: 900px;
+    padding: 0 32px;
+    text-align: center;
+}
+
+.sb-label {
+    font-size: 0.78rem;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--primary-light);
+    margin-bottom: 20px;
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.sb-label.sb-visible { opacity: 1; transform: translateY(0); }
+
+.sb-title {
+    font-size: clamp(2.2rem, 5.5vw, 4.5rem);
+    font-weight: 900;
+    line-height: 1.05;
+    letter-spacing: -2px;
+    color: var(--text-primary);
+    margin-bottom: 56px;
+    display: flex;
+    gap: 0.3em;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.sb-word {
+    display: inline-block;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.45s ease, transform 0.45s ease;
+}
+.sb-word.sb-visible { opacity: 1; transform: translateY(0); }
+.sb-word--accent { color: var(--primary-light); }
+
+.sb-steps {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    margin-bottom: 44px;
+}
+
+.sb-step {
+    flex: 1;
+    max-width: 260px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 24px;
+    padding: 28px 22px;
+    text-align: left;
+    opacity: 0;
+    transform: translateY(40px) scale(0.96);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.sb-step.sb-visible { opacity: 1; transform: translateY(0) scale(1); }
+
+.sb-step__num {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 3px;
+    color: var(--primary-light);
+    opacity: 0.6;
+    margin-bottom: 14px;
+}
+.sb-step__icon { font-size: 1.8rem; margin-bottom: 10px; display: block; }
+.sb-step h3 { font-size: 0.95rem; font-weight: 700; color: var(--text-primary); margin-bottom: 6px; }
+.sb-step p { font-size: 0.82rem; color: var(--text-secondary); line-height: 1.6; }
+
+.sb-cta {
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.sb-cta.sb-visible { opacity: 1; transform: translateY(0); }
+
+.sb-progress-bar {
+    position: absolute;
+    bottom: -48px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 2px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 2px;
+    overflow: hidden;
+}
+.sb-progress-fill {
+    height: 100%;
+    width: 0%;
+    background: var(--primary-light);
+    border-radius: 2px;
+}
+
+@media (max-width: 768px) {
+    .scroll-build__wrapper { height: auto; }
+    .scroll-build__sticky { position: relative; height: auto; padding: 80px 20px; }
+    .sb-steps { flex-direction: column; align-items: center; }
+    .sb-step { opacity: 1; transform: none; max-width: 100%; }
+    .sb-word, .sb-label, .sb-cta { opacity: 1; transform: none; }
+    .sb-progress-bar { display: none; }
+}
